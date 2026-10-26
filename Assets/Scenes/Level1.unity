@@ -586,10 +586,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   audioSource: {fileID: 463644685}
-  introMusic: {fileID: 8300000, guid: 698ebe0fa62a609428d2371dbebb0f27, type: 3}
-  defaultMusic: {fileID: 8300000, guid: 26370e93816866b4d8f563fbde1e9273, type: 3}
-  scaredGhostMusic: {fileID: 8300000, guid: 1adf0a2f0b9cbb748bd6a80cf33e76ca, type: 3}
-  deadGhostMusic: {fileID: 8300000, guid: ce87e9b145b4dbf47883d96791a776ee, type: 3}
+  introMusic: {fileID: 8300000, guid: badbcb99ba2a2d248aada8952366a9c2, type: 3}
+  defaultMusic: {fileID: 8300000, guid: cbb674dde3b345b409633d802b15a9cd, type: 3}
+  scaredGhostMusic: {fileID: 8300000, guid: c532c763990940c4dbddf833a1e2218f, type: 3}
+  deadGhostMusic: {fileID: 8300000, guid: 7b84a26eb12f86e439370fe30a5833ea, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
