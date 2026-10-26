@@ -3,6 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class LoadScenes : MonoBehaviour
 {
+    public void LoadStartScene()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
     public void LoadLevel1()
     {
         SceneManager.LoadScene("Level1");
@@ -14,7 +18,7 @@ public class LoadScenes : MonoBehaviour
         {
             SceneManager.LoadScene("Level2");
         }
-        
+
         else
         {
             Debug.Log("Sorry Level 2 is not available yet!");
