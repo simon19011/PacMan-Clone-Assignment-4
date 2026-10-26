@@ -48,7 +48,6 @@ public class Tweener : MonoBehaviour
             Action completedCallback = onComplete;
 
             activeTween = null;
-            activeTween = null;
 
             completedCallback?.Invoke();
         }
