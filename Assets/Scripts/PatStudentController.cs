@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class PacStudentController : MonoBehaviour
@@ -8,19 +9,27 @@ public class PacStudentController : MonoBehaviour
     public Tweener tweener;
     public Animator animator;
     public ParticleSystem dustParticles;
+    public ParticleSystem wallParticles;
+    public TMP_Text scoreText;
     
     [Header("Audio")]
     public AudioSource movementAudio;
     public AudioClip pelletMovementAudio;
     public AudioClip normalMovementAudio;
+    public AudioSource wallAudioSource;
+    public AudioClip wallHitAudio;
+    public AudioSource cherryAudioSource;
+    public AudioClip cherryEatAudio;
 
     [Header("Movement")]
     public float speed = 5f;
 
+    private int score;
     private bool isLerping;
     private Vector3Int currentCell;
     private string lastInput = "";
     private string currentInput = "";
+    private bool blocked = false;
 
     void Start()
     {
@@ -32,6 +41,16 @@ public class PacStudentController : MonoBehaviour
         animator.SetInteger("Direction", 3);
 
         SetMovingEffects(false);
+        animator.speed = 0f;
+
+        bool hasPellet = levelGenerator.IsPelletCell(currentCell);
+        AudioClip clip = hasPellet ? pelletMovementAudio : normalMovementAudio;
+        movementAudio.clip = clip;
+        movementAudio.Play();
+        if (levelGenerator.CollectPellet(currentCell))
+        {
+            AddScore(10);
+        }
     }
     
     void Update()
@@ -104,10 +123,64 @@ public class PacStudentController : MonoBehaviour
 
         Vector3Int nextCell = currentCell + offset;
 
-        if (levelGenerator == null || !levelGenerator.IsWalkableCell(nextCell))
+        if (levelGenerator == null)
         {
             return false;
         }
+
+        if (!levelGenerator.IsWalkableCell(nextCell))
+        {
+            if (levelGenerator.IsTeleporter(nextCell))
+            {
+                int oppositeColumn;
+
+                if (nextCell.x < 0)
+                {
+                    oppositeColumn = levelGenerator.fullMap.GetLength(1) - 1;
+                }
+
+                else if (nextCell.x >= levelGenerator.fullMap.GetLength(1))
+                {
+                    oppositeColumn = 0;
+                }
+
+                else
+                {
+                    return false;
+                }
+
+                Vector3Int teleportCell = new Vector3Int(oppositeColumn, currentCell.y, currentCell.z);
+
+                if (!levelGenerator.IsWalkableCell(teleportCell))
+                {
+                    return false;
+                }
+
+                currentCell = teleportCell;
+                transform.position = grid.GetCellCenterWorld(currentCell);
+
+                blocked = false;
+                animator.speed = 1f;
+                SetAnimationDirection(grid.GetCellCenterWorld(currentCell) - grid.GetCellCenterWorld(currentCell - offset));
+
+                return true;
+            }
+
+            if (!blocked)
+            {
+                wallParticles.Play();
+                wallAudioSource.PlayOneShot(wallHitAudio);
+                blocked = true;
+            }
+
+            SetMovingEffects(false);
+            animator.speed = 0f;
+
+            return false;
+        }
+
+        blocked = false;
+        animator.speed = 1f;
 
         Vector3 startPosition = grid.GetCellCenterWorld(currentCell);
         Vector3 endPosition = grid.GetCellCenterWorld(nextCell);
@@ -130,6 +203,10 @@ public class PacStudentController : MonoBehaviour
         bool started = tweener.AddTween(transform, startPosition, endPosition, duration, () => 
         {
             currentCell = nextCell;
+            if (levelGenerator.CollectPellet(currentCell))
+            {
+                AddScore(10);
+            }
             isLerping = false;
         }
         );
@@ -187,7 +264,6 @@ public class PacStudentController : MonoBehaviour
         if (movementAudio.clip != clip || !movementAudio.isPlaying)
         {
             movementAudio.clip = clip;
-            movementAudio.loop = false;
             movementAudio.Play();
         }
     }
@@ -205,10 +281,30 @@ public class PacStudentController : MonoBehaviour
                 dustParticles.Stop();
             }
         }
+    }
 
-        if (!moving && movementAudio != null)
+    private void AddScore(int points)
+    {
+        score += points;
+
+        if (scoreText != null)
         {
-            movementAudio.Stop();
+            scoreText.text = score.ToString("D6");
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Cherry"))
+        {
+            if (movementAudio != null && cherryEatAudio != null)
+            {
+                cherryAudioSource.PlayOneShot(cherryEatAudio);
+            }
+
+            AddScore(100);
+
+            Destroy(other.gameObject);
         }
     }
 }

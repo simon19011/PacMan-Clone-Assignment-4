@@ -35,7 +35,7 @@ public class LevelGenerator : MonoBehaviour
         {0,0,0,0,0,0,5,0,0,0,4,0,0,0},
     };
 
-    private int[,] fullMap;
+    public int[,] fullMap;
     void Awake()
     {
         GenerateLevel();
@@ -149,6 +149,42 @@ public class LevelGenerator : MonoBehaviour
         int tileID = fullMap[row, col];
 
         return tileID == 5 || tileID == 6;
+    }
+
+    public bool IsTeleporter(Vector3Int cell)
+    {
+        int row = -cell.y;
+        int col = cell.x;
+
+        return row < 0 || row >= fullMap.GetLength(0) || col < 0 || col >= fullMap.GetLength(1);
+    }
+
+    public bool CollectPellet(Vector3Int cell)
+    {
+        if (fullMap == null || tileMap == null)
+        {
+            return false;
+        }
+
+        int row = -cell.y;
+        int col = cell.x;
+
+        if (row < 0 || row >= fullMap.GetLength(0) ||
+            col < 0 || col >= fullMap.GetLength(1))
+        {
+            return false;
+        }
+
+        if (fullMap[row, col] != 5)
+        {
+            return false;
+        }
+
+        tileMap.SetTile(cell, null);
+
+        fullMap[row, col] = 0;
+
+        return true;
     }
 
     private bool IsWall(int row, int col)
