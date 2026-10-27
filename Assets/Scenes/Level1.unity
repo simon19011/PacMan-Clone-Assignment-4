@@ -10838,7 +10838,6 @@ GameObject:
   m_Component:
   - component: {fileID: 463644686}
   - component: {fileID: 463644685}
-  - component: {fileID: 463644687}
   m_Layer: 0
   m_Name: Background Music
   m_TagString: Untagged
@@ -10958,23 +10957,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2063977149}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &463644687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 463644684}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2070ed1bbb8cc864e81512ec04a274b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  audioSource: {fileID: 463644685}
-  introMusic: {fileID: 8300000, guid: badbcb99ba2a2d248aada8952366a9c2, type: 3}
-  defaultMusic: {fileID: 8300000, guid: cbb674dde3b345b409633d802b15a9cd, type: 3}
-  scaredGhostMusic: {fileID: 8300000, guid: c532c763990940c4dbddf833a1e2218f, type: 3}
-  deadGhostMusic: {fileID: 8300000, guid: 7b84a26eb12f86e439370fe30a5833ea, type: 3}
 --- !u!1 &472222344
 GameObject:
   m_ObjectHideFlags: 0
@@ -21633,7 +21615,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 00:00:00
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 55e3a08d51d86804f97e712294f9a626, type: 2}
   m_sharedMaterial: {fileID: -3686037285600513226, guid: 55e3a08d51d86804f97e712294f9a626, type: 2}
