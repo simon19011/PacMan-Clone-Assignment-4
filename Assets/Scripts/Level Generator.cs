@@ -159,32 +159,32 @@ public class LevelGenerator : MonoBehaviour
         return row < 0 || row >= fullMap.GetLength(0) || col < 0 || col >= fullMap.GetLength(1);
     }
 
-    public bool CollectPellet(Vector3Int cell)
+    public int CollectItem(Vector3Int cell)
     {
         if (fullMap == null || tileMap == null)
         {
-            return false;
+            return 0;
         }
 
         int row = -cell.y;
         int col = cell.x;
 
-        if (row < 0 || row >= fullMap.GetLength(0) ||
-            col < 0 || col >= fullMap.GetLength(1))
+        if (row < 0 || row >= fullMap.GetLength(0) || col < 0 || col >= fullMap.GetLength(1))
         {
-            return false;
+            return 0;
         }
 
-        if (fullMap[row, col] != 5)
+        int tileID = fullMap[row, col];
+
+        if (tileID != 5 && tileID != 6)
         {
-            return false;
+            return 0;
         }
 
         tileMap.SetTile(cell, null);
-
         fullMap[row, col] = 0;
 
-        return true;
+        return tileID;
     }
 
     private bool IsWall(int row, int col)

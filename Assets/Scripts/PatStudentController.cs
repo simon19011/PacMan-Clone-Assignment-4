@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -24,6 +25,15 @@ public class PacStudentController : MonoBehaviour
     [Header("Movement")]
     public float speed = 5f;
 
+    [Header("Game State")]
+    public GameManager gameManager;
+
+    public ParticleSystem deathParticles;
+    public AudioClip deathSound;
+    public AnimationClip playerDeathAnimationClip;
+
+    private bool isDying;
+    private Vector3 startingPosition;
     private int score;
     private bool isLerping;
     private Vector3Int currentCell;
@@ -34,6 +44,7 @@ public class PacStudentController : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        startingPosition = transform.position;
 
         currentCell = grid.WorldToCell(transform.position);
         transform.position = grid.GetCellCenterWorld(currentCell);
@@ -47,14 +58,27 @@ public class PacStudentController : MonoBehaviour
         AudioClip clip = hasPellet ? pelletMovementAudio : normalMovementAudio;
         movementAudio.clip = clip;
         movementAudio.Play();
-        if (levelGenerator.CollectPellet(currentCell))
+        int itemID = levelGenerator.CollectItem(currentCell);
+
+        if (itemID == 5)
         {
-            AddScore(10);
+            gameManager.AddScore(10);
+        }
+
+        else if (itemID == 6)
+        {
+            gameManager.AddScore(50);
+            gameManager.ActivatePowerPill();
         }
     }
     
     void Update()
     {
+        if (isDying)
+        {
+            return;
+        }
+
         ReadInputs();
 
         if (isLerping)
@@ -203,10 +227,19 @@ public class PacStudentController : MonoBehaviour
         bool started = tweener.AddTween(transform, startPosition, endPosition, duration, () => 
         {
             currentCell = nextCell;
-            if (levelGenerator.CollectPellet(currentCell))
+            int itemID = levelGenerator.CollectItem(currentCell);
+
+            if (itemID == 5)
             {
-                AddScore(10);
+                gameManager.AddScore(10);
             }
+
+            else if (itemID == 6)
+            {
+                gameManager.AddScore(50);
+                gameManager.ActivatePowerPill();
+            }
+
             isLerping = false;
         }
         );
@@ -293,18 +326,128 @@ public class PacStudentController : MonoBehaviour
         }
     }
 
+    
+    private IEnumerator PlayerDeathRoutine()
+    {
+        if (isDying)
+        {
+            yield break;
+        }
+
+        isDying = true;
+
+        lastInput = "";
+        currentInput = "";
+
+        if (movementAudio != null)
+        {
+            movementAudio.Stop();
+        }
+
+        if (cherryAudioSource != null)
+        {
+            cherryAudioSource.Stop();
+        }
+        if (wallAudioSource != null)
+        {
+            wallAudioSource.Stop();
+        }
+
+        SetMovingEffects(false);
+        gameManager.FreezeGhosts();
+        gameManager.LoseLife();
+
+        if (deathParticles != null)
+        {
+            deathParticles.transform.position = transform.position;
+            deathParticles.Play();
+        }
+
+        if (movementAudio != null && deathSound != null)
+        {
+            movementAudio.PlayOneShot(deathSound);
+        }
+
+        if (animator != null && playerDeathAnimationClip != null)
+        {
+            animator.Play(playerDeathAnimationClip.name, 0, 0f);
+
+            yield return new WaitForSeconds(playerDeathAnimationClip.length);
+        }
+
+        else
+        {
+            yield return new WaitForSeconds(1f);
+        }
+
+        transform.position = startingPosition;
+        currentCell = grid.WorldToCell(startingPosition);
+        transform.position = grid.GetCellCenterWorld(currentCell);
+
+        gameManager.ResetGhosts();
+
+        if (animator != null)
+        {
+            animator.SetInteger("Direction", 3);
+            animator.speed = 0f;
+        }
+
+        isLerping = false;
+        blocked = false;
+
+        lastInput = "";
+        currentInput = "";
+
+        if (gameManager.Lives > 0)
+        {
+            isDying = false;
+            gameManager.ResumeGhosts();
+        }
+
+        else
+        {
+            Debug.Log("Game Over");
+            // Game Over sequence to be done later
+        }
+    }
+
+
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isDying || gameManager == null)
+            return;
+
         if (other.CompareTag("Cherry"))
         {
             if (movementAudio != null && cherryEatAudio != null)
-            {
-                cherryAudioSource.PlayOneShot(cherryEatAudio);
-            }
+                movementAudio.PlayOneShot(cherryEatAudio);
 
-            AddScore(100);
-
+            gameManager.AddScore(100);
             Destroy(other.gameObject);
+            return;
+        }
+
+        GhostController ghost = other.GetComponent<GhostController>();
+
+        if (ghost == null)
+        {
+            return;
+        }
+
+        if (ghost.CurrentState == GhostState.Dead)
+        {
+            return;
+        }
+
+        if (ghost.CurrentState == GhostState.Scared || ghost.CurrentState == GhostState.Recovering)
+        {
+            gameManager.EatGhost(ghost);
+            return;
+        }
+
+        if (ghost.CurrentState == GhostState.Normal)
+        {
+            StartCoroutine(PlayerDeathRoutine());
         }
     }
 }

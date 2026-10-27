@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Red Dragon Animator Override Controller
+  m_Name: RedDragonOverride
   m_Controller: {fileID: 9100000, guid: 356508b66a36ce2469c4dfacd3d332b0, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 8249ab7aa47a2e341853f6fe909facf5, type: 2}

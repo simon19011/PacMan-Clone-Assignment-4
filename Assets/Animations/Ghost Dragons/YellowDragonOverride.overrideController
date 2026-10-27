@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: YellowDragonOverride
+  m_Controller: {fileID: 9100000, guid: 356508b66a36ce2469c4dfacd3d332b0, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 8249ab7aa47a2e341853f6fe909facf5, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: ce3dec79d7209f143a81bcff8bc24a6a, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 85572401b2446f24e8587762589289ce, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: ace24bf5ae8e3294ebd8d759c393acd1, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 8e6c2521fa2df874f8953cae49a1af26, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 2ae3fe29a98abf74799db0b4bc15c714, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 34001619abc98494c9ba62319515355a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 1a3a7cff510be3d46b57bda3fbfcd985, type: 2}
