@@ -1,10 +1,5 @@
-using System.Data;
-using System.Runtime.CompilerServices;
-using NUnit.Framework;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.UI;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -41,7 +36,7 @@ public class LevelGenerator : MonoBehaviour
     };
 
     private int[,] fullMap;
-    void Start()
+    void Awake()
     {
         GenerateLevel();
     }
@@ -113,6 +108,47 @@ public class LevelGenerator : MonoBehaviour
         );
 
         tileMap.SetTransformMatrix(cellPos, matrix);
+    }
+
+    // Public functions to check for walkability (added here to keep tileMap data in a single place)
+    public bool IsWalkableCell(Vector3Int cell)
+    {
+        if (fullMap == null)
+        {
+            return false;
+        }
+
+        int row = -cell.y;
+        int col = cell.x;
+
+        if (row < 0 || row >= fullMap.GetLength(0) || col < 0 || col >= fullMap.GetLength(1))
+        {
+            return false;
+        }
+
+        int tileID = fullMap[row, col];
+
+        return tileID == 5 || tileID == 6 || tileID == 0;
+    }
+
+    public bool IsPelletCell(Vector3Int cell)
+    {
+        if (fullMap == null)
+        {
+            return false;
+        }
+
+        int row = -cell.y;
+        int col = cell.x;
+
+        if (row < 0 || row >= fullMap.GetLength(0) || col < 0 || col >= fullMap.GetLength(1))
+        {
+            return false;
+        }
+
+        int tileID = fullMap[row, col];
+
+        return tileID == 5 || tileID == 6;
     }
 
     private bool IsWall(int row, int col)
@@ -221,12 +257,22 @@ public class LevelGenerator : MonoBehaviour
         // Walls
         if (tileID == 2 || tileID == 4)
         {
-            if (mask == 3)
+            if (mask == 3 || (mask - 3) == 4 || (mask - 3) == 8)
             {
                 return 0f;
             }
 
-            if (mask == 12)
+            else if (mask == 12 || (mask - 12) == 1 || (mask - 12) == 2)
+            {
+                return 90f;
+            }
+            
+            else if (mask == 1 || mask == 2)
+            {
+                return 0f;
+            }
+
+            else 
             {
                 return 90f;
             }
